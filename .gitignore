@@ -1,7 +1,10 @@
-data/
+/data/
 mlruns/
 __pycache__/
 *.egg-info/
 .ipynb_checkpoints/
 *.wav
 *.flac
+CONTEXTE.md
+prompt_projet.md
+*.pdf

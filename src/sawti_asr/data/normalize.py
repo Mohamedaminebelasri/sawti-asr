@@ -1,0 +1,50 @@
+"""Normalisation du texte : Darija en alphabet arabe, français en latin.
+
+La même fonction est appliquée aux références et aux prédictions avant le
+calcul du WER/CER, pour que l'évaluation soit cohérente.
+"""
+from __future__ import annotations
+
+import re
+import unicodedata
+
+_AR_DIACRITICS = re.compile(r"[ؐ-ًؚ-ٰٟۖ-ۭ]")
+_ALEF_VARIANTS = re.compile(r"[آأإٱ]")  # آ أ إ ٱ
+_TATWEEL = "ـ"
+_LATIN = re.compile(r"[A-Za-zÀ-ɏ]")
+_SPACES = re.compile(r"\s+")
+
+
+def _strip_punct_and_symbols(text: str) -> str:
+    return "".join(
+        " " if unicodedata.category(ch)[0] in ("P", "S") else ch for ch in text
+    )
+
+
+def normalize_text(
+    text: str,
+    remove_diacritics: bool = True,
+    normalize_alef: bool = True,
+    remove_tatweel: bool = True,
+    remove_punctuation: bool = True,
+    lowercase_latin: bool = True,
+) -> str:
+    if text is None:
+        return ""
+    text = unicodedata.normalize("NFKC", str(text))
+    if remove_diacritics:
+        text = _AR_DIACRITICS.sub("", text)
+    if normalize_alef:
+        text = _ALEF_VARIANTS.sub("ا", text)
+    if remove_tatweel:
+        text = text.replace(_TATWEEL, "")
+    if remove_punctuation:
+        text = _strip_punct_and_symbols(text)
+    if lowercase_latin:
+        text = text.lower()  # l'arabe n'a pas de casse : seul le latin change
+    return _SPACES.sub(" ", text).strip()
+
+
+def has_latin(text: str) -> bool:
+    """Vrai si le texte contient des lettres latines (indice de code-switching)."""
+    return bool(_LATIN.search(text or ""))
