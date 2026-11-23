@@ -5,6 +5,7 @@ text:
   remove_tatweel: true
   remove_punctuation: true
   lowercase_latin: true
+  unify_gaf: true            # ڭ گ -> ݣ
 
 doda:                         # propre, lu, 7 locuteurs, licence MIT
   repo: atlasia/DODa-audio-dataset
@@ -38,7 +39,7 @@ moulsot:                      # spontané, YouTube, code-switching, transcrit pa
   max_train_hours: 20         # sous-ensemble pour les GPU gratuits
   val_channel_modulo: 20      # ~1 chaîne sur 20 réservée à la validation
 
-casablanca:                   # test code-switching uniquement (CC BY-NC-ND 4.0)
+casablanca:                   # test externe uniquement (CC BY-NC-ND 4.0)
   repo: UBC-NLP/Casablanca
   config: Morocco
   splits: [validation, test]

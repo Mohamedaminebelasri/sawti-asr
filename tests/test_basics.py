@@ -1,7 +1,7 @@
 import numpy as np
 
 from sawti_asr.augment.noise_bank import mix_at_snr
-from sawti_asr.data.normalize import has_latin, normalize_text
+from sawti_asr.data.normalize import has_latin, is_code_switching, normalize_text
 from sawti_asr.data.prepare import doda_speaker
 from sawti_asr.evaluate.metrics import compute_metrics, relative_gain
 
@@ -14,6 +14,18 @@ def test_normalize_arabic_and_latin():
 def test_has_latin():
     assert has_latin("غادي نمشي للـ réunion")
     assert not has_latin("كيداير لاباس")
+
+
+def test_is_code_switching():
+    assert is_code_switching("كانطلبو غا transport")
+    assert not is_code_switching("player")
+    assert not is_code_switching("كيداير لاباس")
+
+
+def test_unify_gaf():
+    # ڭ (U+06AD) et گ (U+06AF) deviennent ݣ (U+0763)
+    assert normalize_text("ڭالس گاع ݣلس") == "ݣالس ݣاع ݣلس"
+    assert normalize_text("گاع", unify_gaf=False) == "گاع"
 
 
 def test_mix_at_snr_reaches_target():

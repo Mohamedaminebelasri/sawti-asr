@@ -11,6 +11,6 @@ eval:
   test_sets:                  # noms des splits à évaluer s'ils existent
     - test_clean_doda
     - test_moulsot
-    - test_cs_casablanca
+    - test_cs_moulsot
     - test_casablanca_all
   include_noisy: true

@@ -19,8 +19,8 @@ Projet d'initiation 4A, filière IA, ENSAM Meknès. Encadrants : Pr. Hosni, Pr. 
 | Source | Rôle | Licence |
 |---|---|---|
 | atlasia/DODa-audio-dataset | entraînement + test propre (split par locuteur) | MIT |
-| atlasia/MoulSot-Full | entraînement (≈20 h) + test spontané (split par chaîne) | non déclarée |
-| UBC-NLP/Casablanca (Morocco) | test code-switching uniquement | CC BY-NC-ND 4.0 |
+| atlasia/MoulSot-Full | entraînement (≈20 h) + test spontané (split par chaîne) + test code-switching (extraits arabe + latin, transcriptions Gemini) | non déclarée |
+| UBC-NLP/Casablanca (Morocco) | test externe uniquement (le français y est translittéré en arabe) | CC BY-NC-ND 4.0 |
 | ESC-50 | bruits : folds 1–4 entraînement, fold 5 test | CC BY-NC 3.0 |
 
 Convention d'écriture : Darija en alphabet arabe, mots français en latin.

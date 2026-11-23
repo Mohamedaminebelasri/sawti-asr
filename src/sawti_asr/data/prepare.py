@@ -4,8 +4,8 @@ Sorties (DatasetDict) :
   train, validation         : DODa + sous-ensemble de MoulSot
   test_clean_doda           : DODa, locuteurs jamais vus à l'entraînement
   test_moulsot              : test officiel MoulSot (chaînes exclues du train)
-  test_cs_casablanca        : Casablanca-Maroc, segments avec du latin (CS)
-  test_casablanca_all       : Casablanca-Maroc complet (validation + test)
+  test_cs_moulsot           : test officiel MoulSot, extraits arabe + latin (CS)
+  test_casablanca_all       : Casablanca-Maroc complet (validation + test), test externe
 
 Colonnes communes : audio, text, source, speaker, duration.
 """
@@ -26,7 +26,7 @@ from datasets import (
     load_dataset,
 )
 
-from .normalize import has_latin, normalize_text
+from .normalize import is_code_switching, normalize_text
 
 log = logging.getLogger(__name__)
 
@@ -165,9 +165,13 @@ def prepare_moulsot(cfg: dict) -> dict[str, Dataset]:
     test_channels = set(test[ch_col]) if ch_col in test.column_names else set()
     log.info("MoulSot : %d chaînes dans le test officiel", len(test_channels))
 
-    def gen_test():
+    def gen_test(cs_only: bool):
         for ex in test:
-            row = _row(ex, _norm(ex[text_col], cfg), "moulsot",
+            raw = ex[text_col]
+            # Le filtre CS porte sur le texte brut (transcriptions Gemini).
+            if cs_only and not is_code_switching(raw):
+                continue
+            row = _row(ex, _norm(raw, cfg), "moulsot",
                        str(ex.get(ch_col, "unk")), sr, cfg)
             if row:
                 yield row
@@ -194,7 +198,8 @@ def prepare_moulsot(cfg: dict) -> dict[str, Dataset]:
                     break
 
     out = {
-        "test": _from_generator(gen_test, sr),
+        "test": _from_generator(gen_test, sr, cs_only=False),
+        "test_cs": _from_generator(gen_test, sr, cs_only=True),
         "train": _from_generator(gen_stream, sr, want_val=False),
         "validation": _from_generator(gen_stream, sr, want_val=True),
     }
@@ -212,26 +217,18 @@ def prepare_casablanca(cfg: dict) -> dict[str, Dataset]:
         parts.append(load_dataset(c["repo"], c["config"], split=split))
     text_col = _detect_text_column(parts[0].column_names, c["text_column"])
 
-    def gen(cs_only: bool):
+    # Pas de jeu CS ici : le français y est translittéré en arabe (pas de latin).
+    def gen():
         for part in parts:
             part = part.cast_column("audio", Audio(sampling_rate=sr))
             for ex in part:
-                raw = ex[text_col]
-                if cs_only and not has_latin(raw):
-                    continue
-                row = _row(ex, _norm(raw, cfg), "casablanca", "unk", sr, cfg)
+                row = _row(ex, _norm(ex[text_col], cfg), "casablanca", "unk", sr, cfg)
                 if row:
                     yield row
 
-    all_ds = _from_generator(gen, sr, cs_only=False)
-    cs_ds = _from_generator(gen, sr, cs_only=True)
-    if len(cs_ds) == 0:
-        log.warning(
-            "Aucun segment avec du latin dans Casablanca : le français est peut-être "
-            "translittéré en arabe. Le jeu CS devra être construit autrement."
-        )
-    log.info("Casablanca : %d segments, dont %d en code-switching", len(all_ds), len(cs_ds))
-    return {"all": all_ds, "cs": cs_ds}
+    all_ds = _from_generator(gen, sr)
+    log.info("Casablanca : %d segments", len(all_ds))
+    return {"all": all_ds}
 
 
 # ---------------------------------------------------------------- Assemblage
@@ -247,9 +244,9 @@ def build_dataset(cfg: dict, use_moulsot: bool = True, use_casablanca: bool = Tr
         train.append(ms["train"])
         val.append(ms["validation"])
         dd["test_moulsot"] = ms["test"]
+        dd["test_cs_moulsot"] = ms["test_cs"]
     if use_casablanca:
         cb = prepare_casablanca(cfg)
-        dd["test_cs_casablanca"] = cb["cs"]
         dd["test_casablanca_all"] = cb["all"]
 
     dd["train"] = concatenate_datasets(train).shuffle(seed=cfg["seed"])
