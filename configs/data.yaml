@@ -13,9 +13,16 @@ doda:                         # propre, lu, 7 locuteurs, licence MIT
   # À REMPLIR depuis la carte du dataset (table "index -> locuteur").
   # Format : LOCUTEUR: [[debut, fin], [debut, fin]]   (bornes incluses)
   # Exemple donné par la carte : F1: [[0, 999], [8000, 8999]]
-  speaker_ranges: {}
-  test_speakers: []           # ex. [F4, M3]
-  val_speakers: []            # ex. [F3]
+  speaker_ranges:
+    F1: [[0, 999], [8000, 8999]]
+    F2: [[2000, 2730]]
+    F3: [[5000, 5999]]
+    F4: [[7000, 7999]]
+    M1: [[2731, 2800], [4000, 4999], [6000, 6999], [10000, 11999], [12351, 12742]]
+    M2: [[2801, 3999], [9000, 9999], [12000, 12350]]
+    M3: [[1000, 1999]]
+  test_speakers: [F4, M3]
+  val_speakers: [F2]
   # Utilisé seulement si speaker_ranges est vide (split NON disjoint par locuteur)
   val_ratio_fallback: 0.1
   test_ratio_fallback: 0.1
