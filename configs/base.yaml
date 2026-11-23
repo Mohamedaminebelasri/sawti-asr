@@ -1,0 +1,18 @@
+seed: 42
+sampling_rate: 16000
+min_duration_s: 0.3
+max_duration_s: 30.0          # fenêtre d'entrée de Whisper
+
+paths:
+  processed: data/processed   # DatasetDict préparé
+  noisy_test: data/test_noisy # jeux de test bruités figés
+  results: results
+
+hub:
+  push: false                 # true pour envoyer les données préparées sur le Hub
+  repo_id: null               # ex. "votre-user/sawti-asr-data" (dataset PRIVÉ)
+
+mlflow:
+  experiment: sawti-asr
+  # L'adresse et les identifiants passent par des variables d'environnement
+  # (MLFLOW_TRACKING_URI, MLFLOW_TRACKING_USERNAME, MLFLOW_TRACKING_PASSWORD).

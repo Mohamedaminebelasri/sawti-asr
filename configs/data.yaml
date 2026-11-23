@@ -1,0 +1,45 @@
+# Convention d'écriture : Darija en alphabet arabe, mots français en latin.
+text:
+  remove_diacritics: true
+  normalize_alef: true        # أ إ آ ٱ -> ا
+  remove_tatweel: true
+  remove_punctuation: true
+  lowercase_latin: true
+
+doda:                         # propre, lu, 7 locuteurs, licence MIT
+  repo: atlasia/DODa-audio-dataset
+  split: train
+  text_column: darija_Arab_new
+  # À REMPLIR depuis la carte du dataset (table "index -> locuteur").
+  # Format : LOCUTEUR: [[debut, fin], [debut, fin]]   (bornes incluses)
+  # Exemple donné par la carte : F1: [[0, 999], [8000, 8999]]
+  speaker_ranges: {}
+  test_speakers: []           # ex. [F4, M3]
+  val_speakers: []            # ex. [F3]
+  # Utilisé seulement si speaker_ranges est vide (split NON disjoint par locuteur)
+  val_ratio_fallback: 0.1
+  test_ratio_fallback: 0.1
+
+moulsot:                      # spontané, YouTube, code-switching, transcrit par Gemini
+  repo: atlasia/MoulSot-Full
+  train_config: 100-gt-2.5
+  train_split: train
+  test_config: default
+  test_split: test            # à vérifier : le script affiche les splits si absent
+  text_column: null           # null = détection automatique
+  channel_column: channel
+  max_train_hours: 20         # sous-ensemble pour les GPU gratuits
+  val_channel_modulo: 20      # ~1 chaîne sur 20 réservée à la validation
+
+casablanca:                   # test code-switching uniquement (CC BY-NC-ND 4.0)
+  repo: UBC-NLP/Casablanca
+  config: Morocco
+  splits: [validation, test]
+  text_column: transcription
+
+noise:
+  esc50_dir: data/ESC-50      # git clone https://github.com/karolpiczak/ESC-50
+  test_fold: 5                # folds 1-4 réservés à l'augmentation (entraînement)
+  snrs_db: [20, 10, 5, 0]
+  min_rms: 0.0001             # ignore les clips quasi silencieux
+  noisy_source: test_clean_doda

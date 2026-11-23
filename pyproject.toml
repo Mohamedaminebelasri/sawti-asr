@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sawti-asr"
+version = "0.1.0"
+description = "Pipeline ASR & MLOps pour la Darija marocaine (Whisper + LoRA + augmentation)"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]

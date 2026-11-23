@@ -1,0 +1,15 @@
+# torch est déjà installé sur Kaggle et Colab : ne pas le réinstaller.
+# Après la première installation qui marche, figer les versions avec :
+#   pip freeze > requirements-lock.txt
+transformers>=4.44,<5
+datasets>=2.20,<4.0      # datasets 4.x change le décodage audio (torchcodec)
+accelerate>=0.33
+huggingface_hub>=0.24
+librosa>=0.10
+soundfile>=0.12
+jiwer>=3.0
+mlflow>=2.14
+pyyaml>=6.0
+numpy
+pandas
+pytest

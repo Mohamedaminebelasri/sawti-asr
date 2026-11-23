@@ -1,0 +1,16 @@
+experiment_id: E0
+description: Whisper zero-shot (sans entraînement)
+model:
+  name: openai/whisper-base   # tiny / base / small
+  language: ar
+  task: transcribe
+eval:
+  batch_size: 16
+  max_new_tokens: 225
+  max_samples: null           # ex. 50 pour un test rapide
+  test_sets:                  # noms des splits à évaluer s'ils existent
+    - test_clean_doda
+    - test_moulsot
+    - test_cs_casablanca
+    - test_casablanca_all
+  include_noisy: true
