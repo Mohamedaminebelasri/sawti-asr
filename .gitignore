@@ -8,3 +8,10 @@ __pycache__/
 CONTEXTE.md
 prompt_projet.md
 *.pdf
+
+# Sorties Kaggle téléchargées (kaggle kernels output)
+kaggle/output/
+# Jetons : jamais dans Git (dataset Kaggle privé sawti-secrets)
+secrets.env
+*.env
+sawti-secrets/
