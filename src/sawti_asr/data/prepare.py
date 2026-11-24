@@ -26,7 +26,7 @@ from datasets import (
     load_dataset,
 )
 
-from .normalize import is_code_switching, normalize_text
+from .normalize import has_arabic, is_code_switching, normalize_text
 
 log = logging.getLogger(__name__)
 
@@ -249,9 +249,24 @@ def build_dataset(cfg: dict, use_moulsot: bool = True, use_casablanca: bool = Tr
         cb = prepare_casablanca(cfg)
         dd["test_casablanca_all"] = cb["all"]
 
-    dd["train"] = concatenate_datasets(train).shuffle(seed=cfg["seed"])
-    dd["validation"] = concatenate_datasets(val)
+    train_ds = concatenate_datasets(train)
+    val_ds = concatenate_datasets(val)
+    if cfg.get("drop_latin_only_train", False):
+        # Retire de train/validation les extraits sans aucune lettre arabe
+        # (Arabizi ou langue étrangère). Les jeux de test ne sont pas touchés.
+        train_ds = _drop_latin_only(train_ds, "train")
+        val_ds = _drop_latin_only(val_ds, "validation")
+    dd["train"] = train_ds.shuffle(seed=cfg["seed"])
+    dd["validation"] = val_ds
     return DatasetDict(dd)
+
+
+def _drop_latin_only(ds: Dataset, name: str) -> Dataset:
+    # input_columns="text" : seule la colonne texte est lue, l'audio n'est pas décodé.
+    kept = ds.filter(has_arabic, input_columns="text")
+    log.info("%s : %d extraits sans lettre arabe retirés (%d -> %d)",
+             name, len(ds) - len(kept), len(ds), len(kept))
+    return kept
 
 
 def summary(dd: DatasetDict) -> str:
