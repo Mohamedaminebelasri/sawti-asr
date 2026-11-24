@@ -3,7 +3,8 @@
 Sorties (DatasetDict) :
   train, validation         : DODa + sous-ensemble de MoulSot
   test_clean_doda           : DODa, locuteurs jamais vus à l'entraînement
-  test_moulsot              : test officiel MoulSot (chaînes exclues du train)
+  test_moulsot              : test officiel MoulSot (chaînes exclues du train),
+                              sans les extraits Arabizi si drop_latin_only_test
   test_cs_moulsot           : test officiel MoulSot, extraits arabe + latin (CS)
   test_casablanca_all       : Casablanca-Maroc complet (validation + test), test externe
 
@@ -253,12 +254,23 @@ def build_dataset(cfg: dict, use_moulsot: bool = True, use_casablanca: bool = Tr
     val_ds = concatenate_datasets(val)
     if cfg.get("drop_latin_only_train", False):
         # Retire de train/validation les extraits sans aucune lettre arabe
-        # (Arabizi ou langue étrangère). Les jeux de test ne sont pas touchés.
+        # (Arabizi ou langue étrangère). Les jeux de test sont traités à part.
         train_ds = _drop_latin_only(train_ds, "train")
         val_ds = _drop_latin_only(val_ds, "validation")
     dd["train"] = train_ds.shuffle(seed=cfg["seed"])
     dd["validation"] = val_ds
+    _drop_latin_only_test(dd, cfg)
     return DatasetDict(dd)
+
+
+def _drop_latin_only_test(dd: dict, cfg: dict) -> None:
+    """Retire de test_moulsot (et de lui seul) les extraits sans aucune lettre arabe.
+
+    Une référence en Arabizi ne peut pas être comparée à une sortie en alphabet
+    arabe : le WER serait faux. Les autres jeux de test ne sont pas touchés.
+    """
+    if cfg.get("drop_latin_only_test", False) and "test_moulsot" in dd:
+        dd["test_moulsot"] = _drop_latin_only(dd["test_moulsot"], "test_moulsot")
 
 
 def _drop_latin_only(ds: Dataset, name: str) -> Dataset:
