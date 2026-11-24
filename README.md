@@ -23,7 +23,7 @@ Projet d'initiation 4A, filière IA, ENSAM Meknès. Encadrants : Pr. Hosni, Pr. 
 | UBC-NLP/Casablanca (Morocco) | test externe uniquement (le français y est translittéré en arabe) | CC BY-NC-ND 4.0 |
 | ESC-50 | bruits : folds 1–4 entraînement, fold 5 test | CC BY-NC 3.0 |
 
-Convention d'écriture : Darija en alphabet arabe, mots français en latin.
+Convention d'écriture (validée) : Darija en alphabet arabe, mots français en latin, **pas d'Arabizi**. Les extraits d'entraînement et de validation sans aucune lettre arabe (Arabizi ou langue étrangère, ≈1,4 % du train) sont retirés par `drop_latin_only_train: true` dans `configs/data.yaml` ; les jeux de test ne sont jamais filtrés.
 **Aucun audio n'est versionné dans ce dépôt.**
 
 ## Installation (Kaggle ou Colab)

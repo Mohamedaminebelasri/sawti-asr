@@ -9,8 +9,8 @@ paths:
   results: results
 
 hub:
-  push: false                 # true pour envoyer les données préparées sur le Hub
-  repo_id: null               # ex. "votre-user/sawti-asr-data" (dataset PRIVÉ)
+  push: false                 # ou option --push-hub de scripts/prepare_data.py
+  repo_id: BELASRI/sawti-asr-data   # dataset PRIVÉ ; relu par scripts/fetch_data.py
 
 mlflow:
   experiment: sawti-asr
