@@ -8,8 +8,12 @@ text:
   unify_gaf: true            # ڭ گ -> ݣ
 
 # Retire de train et validation les extraits sans aucune lettre arabe
-# (Arabizi ou langue étrangère). Les jeux de test ne sont jamais filtrés.
+# (Arabizi ou langue étrangère).
 drop_latin_only_train: true
+# Même filtre pour test_moulsot UNIQUEMENT (≈9 extraits sur 1962) : une référence
+# en Arabizi ne peut pas être comparée à une sortie en alphabet arabe.
+# Les autres jeux de test ne sont jamais filtrés.
+drop_latin_only_test: true
 
 doda:                         # propre, lu, 7 locuteurs, licence MIT
   repo: atlasia/DODa-audio-dataset
